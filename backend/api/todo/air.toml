@@ -1,0 +1,25 @@
+root = "/app"
+tmp_dir = "bin/todo"
+
+[build]
+# Build command relative to root (/app)
+cmd = "go build -o ./bin/todo/main api/todo/main.go"
+bin = "bin/todo/main"
+full_bin = "./bin/todo/main"
+include_ext = ["go"]
+exclude_dir = ["docker"]
+include_dir = ["api/todo", "lib"]
+exclude_file = []
+exclude_regex = ["_test\\.go"]
+exclude_unchanged = false
+follow_symlink = false
+delay = 100
+stop_on_error = true
+log = "bin/todo/air.log"
+send_interrupt = true
+
+[screen]
+clear_on_rebuild = true
+
+[misc]
+clean_on_exit = true
