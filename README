@@ -1,0 +1,16 @@
+# Take home assessment repository
+
+## Table Of Contents
+
+1. [Pre Requisites](#pre-requisites)
+2. [Installation](#installation)
+
+## Pre-Requisites
+
+You will need to ensure you have a couple things installed to be able to test your code locally
+
+- Go - [Go docs](https://go.dev/doc/)
+- Node - [Node Homepage](https://nodejs.org/en)
+  - There are plenty of different ways to install node, you should have at least version 16
+  - We use `pnpm` for installing our packages. `pnpm` has great performance and dependency resolution
+- Docker - [Docker Installation](https://docs.docker.com/engine/install/)
