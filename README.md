@@ -23,7 +23,7 @@ Your task is to create a TODO list app using the provided backend, but feel free
 
 Below are some rough instructions and pointers for this project:
 
-- Clone this repository.
+- Clone this repository and push changes to your own repository. Make sure we are able to access your repository (invite us or make it public).
 - Spin up the local API by running `docker compose up` (add `-d` to run in the background) within the backend folder
 - Make sure to run `npm i` within the `todo-demo` folder (if you plan to build off of this). Then run `npm run dev` to run the next.js app locally.
 - Make a frontend capable of reading the TODOs as well as creating new TODOs via the API
