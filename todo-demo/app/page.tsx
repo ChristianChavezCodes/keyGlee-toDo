@@ -22,6 +22,11 @@ export default function Home() {
           need to alter the backend, just worry about making the proper CRUD api
           calls to it.
         </p>
+        <p>
+          The backend and templated frontend are set up for being a simple TODO list app,
+          but feel free to come up with your own theme! Your frontend could say something like 
+          &ldquo;Shopping List&ldquo; and the frontend elements could reflect that theme! Have fun and be creative!
+        </p>
         <h4>Goals</h4>
         <ul>
           <li>Functionality to read the current TODOs from the API</li>
@@ -43,10 +48,10 @@ export default function Home() {
         <p>
           The frontend provided is a starter for a react/next.js app. Feel free
           to build off of this or totally remove everything in `todo-demo` to
-          make your own frontend app.
+          make your own app using the tools of your choice.
         </p>
 
-        <h4>Tools being used Starter</h4>
+        <h4>Tools being used by the Starter Template</h4>
         <ul>
           <li>Next.js</li>
           <li>React.js</li>
@@ -62,7 +67,7 @@ export default function Home() {
           The backend is a simple REST API that you can interact with via API
           calls from your frontend. By default the backend&apos;s base url will
           be `http://localhost:4000` with additional routes for the resource
-          type itself (for example: GET `http://localhost:4000/todo` will get
+          type itself (for example: GET `http://localhost:4000/todos` will get
           all todos).
         </p>
         <p>

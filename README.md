@@ -19,15 +19,18 @@ You will need to ensure you have a couple things installed to be able to test yo
 
 ## Project Details
 
-Create a basic todo list frontend app that hits the local backend api we provided.
+Your task is to create a TODO list app using the provided backend, but feel free to create your own theme! Your frontend could say something like "Shopping List" and the frontend elements could reflect that theme! Have fun and be creative! :)
+
+Below are some rough instructions and pointers for this project:
 
 - Clone this repository.
 - Spin up the local API by running `docker compose up` (add `-d` to run in the background) within the backend folder
-- Make sure to run `npm i` within the `todo-demo` folder (if you plan to build off of this). Then run `npm run dev` to run the next.js app locally (if you use our template).
+- Make sure to run `npm i` within the `todo-demo` folder (if you plan to build off of this). Then run `npm run dev` to run the next.js app locally.
 - Make a frontend capable of reading the TODOs as well as creating new TODOs via the API
 - Optionally add functionality to UPDATE and DELETE todo records.
-- Try to timebox to no more than 2 hours, please don't spend your whole weekend on this
+- Try to timebox to no more than 2 hours, please don't spend too much time on this.
 - During technical interview showcase your code running and give a walk through of your work so we can chat about it!
+- Instructions on how to submit your code and when to submit it should be provided via email.
 - Have fun :D
 
 # Testing locally
