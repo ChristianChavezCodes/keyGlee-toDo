@@ -3,17 +3,32 @@
 ## Table Of Contents
 
 1. [Pre Requisites](#pre-requisites)
-2. [Installation](#installation)
+2. [Project Details](#project-details)
+3. [Testing Locally](#testing-locally)
+4. [Frontend](#frontend)
+5. [Backend](#backend-api)
 
 ## Pre-Requisites
 
 You will need to ensure you have a couple things installed to be able to test your code locally
 
-- Go - [Go docs](https://go.dev/doc/)
 - Node - [Node Homepage](https://nodejs.org/en)
   - There are plenty of different ways to install node, you should have at least version 16
   - This project will use `npm` for installing packages
 - Docker - [Docker Installation](https://docs.docker.com/engine/install/)
+
+## Project Details
+
+Create a basic todo list frontend app that hits the local backend api we provided.
+
+- Clone this repository.
+- Spin up the local API by running `docker compose up` within the backend folder
+- Make sure to run `npm i` within the `todo-demo` folder (if you plan to build off of this). Then run `npm run dev` to run the next.js app locally (if you use our template).
+- Make a frontend capable of reading the TODOs as well as creating new TODOs via the API
+- Optionally add functionality to UPDATE and DELETE todo records.
+- Try to timebox to no more than 2 hours, please don't spend your whole weekend on this
+- During technical interview showcase your code running and give a walk through of your work so we can chat about it!
+- Have fun :D
 
 # Testing locally
 
@@ -36,16 +51,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `todo-demo/app/page.tsx`. The page auto-updates as you edit the file.
 
-### Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
 ## Backend API
 
 Base URL is `http://localhost:4000`
+
+Run via a `docker compose up` command via the `backend` directory.
 
 ### 1. Get Todo
 - **Endpoint**: `/todo/:id`
