@@ -3,10 +3,10 @@ services:
   todo:
     build:
       context: .
-      dockerfile: backend/api/todo/Dockerfile.dev
+      dockerfile: api/todo/Dockerfile.dev
     volumes:
-      - ./backend:/app
-      - ./backend:/app/bin
+      - .:/app
+      - .:/app/bin
       - go-mod-cache:/go/pkg/mod
     ports:
       - "4000:4000"
@@ -20,6 +20,8 @@ services:
       - DB_POST=5432
     networks:
       - api-network
+    depends_on:
+      - postgres
     working_dir: /app
     command: air -c api/todo/air.toml
   

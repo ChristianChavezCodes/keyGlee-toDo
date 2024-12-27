@@ -1,4 +1,4 @@
-# Take home assessment repository
+# Take Home Interview Assignment
 
 ## Table Of Contents
 
@@ -12,19 +12,40 @@ You will need to ensure you have a couple things installed to be able to test yo
 - Go - [Go docs](https://go.dev/doc/)
 - Node - [Node Homepage](https://nodejs.org/en)
   - There are plenty of different ways to install node, you should have at least version 16
-  - We use `npm` for installing our packages. `npm` has great performance and dependency resolution
+  - This project will use `npm` for installing packages
 - Docker - [Docker Installation](https://docs.docker.com/engine/install/)
 
-## Testing locally
+# Testing locally
 
-After successfully installing the previous pre-requisites, run the docker compose command from within the root project directory to spin up a local version of the backend
+After successfully installing the previous pre-requisites, run the docker compose command from within the `backend` directory to spin up a local version of the api.
 ```
 docker compose up
 ```
 
-This will spin up the backend for the Postgres and the API backend that will be used to mock your code with.
+This will spin up the backend for the Postgres and the API that you can hit from your frontend app.
+
+## Frontend
+
+Within the `todo-demo` directory, run the development server:
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `todo-demo/app/page.tsx`. The page auto-updates as you edit the file.
+
+### Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 ## Backend API
+
+Base URL is `http://localhost:4000`
 
 ### 1. Get Todo
 - **Endpoint**: `/todo/:id`

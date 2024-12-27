@@ -1,3 +1,4 @@
 *.env
 bin
 backend/todo/*
+node_modules
