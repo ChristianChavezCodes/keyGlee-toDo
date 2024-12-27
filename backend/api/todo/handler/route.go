@@ -7,9 +7,9 @@ import (
 func (h *Handler) RegisterRoutes(router *echo.Group) {
 
 	//Todo routes
-	router.GET("/todo", h.SearchTodos)
-	router.GET("/todo/:id", h.GetTodo)
-	router.PUT("/todo/:id", h.UpdateTodo)
-	router.POST("/todo", h.CreateTodo)
-	router.DELETE("/todo/:id", h.DeleteTodo)
+	router.GET("/todos", h.SearchTodos)
+	router.GET("/todos/:id", h.GetTodo)
+	router.PUT("/todos/:id", h.UpdateTodo)
+	router.POST("/todos", h.CreateTodo)
+	router.DELETE("/todos/:id", h.DeleteTodo)
 }

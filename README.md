@@ -22,7 +22,7 @@ You will need to ensure you have a couple things installed to be able to test yo
 Create a basic todo list frontend app that hits the local backend api we provided.
 
 - Clone this repository.
-- Spin up the local API by running `docker compose up` within the backend folder
+- Spin up the local API by running `docker compose up` (add `-d` to run in the background) within the backend folder
 - Make sure to run `npm i` within the `todo-demo` folder (if you plan to build off of this). Then run `npm run dev` to run the next.js app locally (if you use our template).
 - Make a frontend capable of reading the TODOs as well as creating new TODOs via the API
 - Optionally add functionality to UPDATE and DELETE todo records.
@@ -58,7 +58,7 @@ Base URL is `http://localhost:4000`
 Run via a `docker compose up` command via the `backend` directory.
 
 ### 1. Get Todo
-- **Endpoint**: `/todo/:id`
+- **Endpoint**: `/todos/:id`
 - **Method**: `GET`
 - **Description**: Retrieve a specific Todo record by its ID.
 - **Request Parameters**:
@@ -70,7 +70,7 @@ Run via a `docker compose up` command via the `backend` directory.
   - `500 Internal Server Error`: An error occurred while retrieving the Todo record.
 
 ### 2. Search Todos
-- **Endpoint**: `/todo`
+- **Endpoint**: `/todos`
 - **Method**: `GET`
 - **Description**: Search for Todo records based on optional parameters.
 - **Request Parameters**:
@@ -82,7 +82,7 @@ Run via a `docker compose up` command via the `backend` directory.
   - `500 Internal Server Error`: An error occurred while searching for Todo records.
 
 ### 3. Create Todo
-- **Endpoint**: `/todo`
+- **Endpoint**: `/todos`
 - **Method**: `POST`
 - **Description**: Create a new Todo record.
 - **Request Body**:
@@ -94,7 +94,7 @@ Run via a `docker compose up` command via the `backend` directory.
   - `500 Internal Server Error`: An error occurred while creating the Todo record.
 
 ### 4. Update Todo
-- **Endpoint**: `/todo/:id`
+- **Endpoint**: `/todos/:id`
 - **Method**: `PUT`
 - **Description**: Retrieve a specific Todo record by its ID and update its attributes according to the Request Body.
 - **Request Parameters**:
@@ -109,7 +109,7 @@ Run via a `docker compose up` command via the `backend` directory.
   - `500 Internal Server Error`: An error occurred while retrieving the Todo record.
 
 ### 5. Delete Todo
-- **Endpoint**: `/todo/:id`
+- **Endpoint**: `/todos/:id`
 - **Method**: `DELETE`
 - **Description**: Deletes a specific Todo record from the database with the given ID.
 - **Request Parameters**:
@@ -126,24 +126,24 @@ The following examples are for use with CURL, however if unfamiliar already try 
 
 #### Get Todo
 ```sh
-curl -X GET http://localhost:4000/todo/1
+curl -X GET http://localhost:4000/todos/1
 ```
 
 #### Search Todos
 ```sh
-curl -X GET "http://localhost:4000/todo?id=1&display_name=Buy%20Milk"
+curl -X GET "http://localhost:4000/todos?id=1&display_name=Buy%20Milk"
 ```
 
 #### Create Todo
 ```sh
-curl -X POST http://localhost:4000/todo -H "Content-Type: application/json" -d '{
+curl -X POST http://localhost:4000/todos -H "Content-Type: application/json" -d '{
   "display_name": "Buy Milk"
 }'
 ```
 
 #### Update Todo
 ```sh
-curl -X PUT http://localhost:4000/todo/1 -H "Content-Type: application/json" -d '{
+curl -X PUT http://localhost:4000/todos/1 -H "Content-Type: application/json" -d '{
   "display_name": "Buy Groceries",
   "due_by": "2025-12-31T12:00:00Z"
 }'
@@ -151,5 +151,5 @@ curl -X PUT http://localhost:4000/todo/1 -H "Content-Type: application/json" -d 
 
 #### Delete Todo
 ```sh
-curl -X DELETE http://localhost:4000/todo/1
+curl -X DELETE http://localhost:4000/todos/1
 ```
