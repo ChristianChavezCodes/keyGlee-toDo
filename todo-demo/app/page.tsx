@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import axios from "axios"               
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar/avatar"
@@ -22,19 +23,25 @@ import {
 import { NavigationBar } from "@/components/navigationBar/navigationBar"
 import { TaskCreator } from "@/components/taskCreator/taskCreator"
 
+interface Todo {
+  id: number
+  display_name: string
+  due_by?: string      
+}
+
 export default function RealtorDashboard() {
-  const [tasks, setTasks] = useState([
-    "Call John Doe about 123 Main St listing",
-    "Prepare documents for 456 Elm St closing",
-    "Schedule photoshoot for new listing",
-    "Follow up with potential buyers for 789 Oak Ave",
-    "Update MLS listings",
-  ])
+  const [todos, setTodos] = useState<Todo[]>([])
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [editingTask, setEditingTask] = useState<string | null>(null)
   const taskListRef = useRef<HTMLDivElement>(null)
 
   const [darkMode, setDarkMode] = useState(false)
+
+
+  useEffect(() => {
+    fetchTodos()
+  }, [])
+
 
   useEffect(() => {
     if (darkMode) {
@@ -44,31 +51,68 @@ export default function RealtorDashboard() {
     }
   }, [darkMode])
 
+
+  const fetchTodos = async () => {
+    try {
+      const res = await axios.get<Todo[]>("http://localhost:4000/todos")
+      setTodos(res.data)
+    } catch (err) {
+      console.error("Error fetching todos:", err)
+    }
+  }
+
+
+  const addTask = async (newTask: string) => {
+    try {
+      const res = await axios.post<Todo>("http://localhost:4000/todos", {
+        display_name: newTask,
+      })
+      setTodos((prev) => [...prev, res.data])
+      setTimeout(scrollToBottom, 0)
+    } catch (err) {
+      console.error("Error creating todo:", err)
+    }
+  }
+
+  const deleteTodo = async (todoId: number) => {
+    try {
+      await axios.delete(`http://localhost:4000/todos/${todoId}`)
+
+      setTodos((prev) => prev.filter((t) => t.id !== todoId))
+    } catch (err) {
+      console.error("Error deleting todo:", err)
+    }
+  }
+
+  const editTask = (index: number, editedTask: string) => {
+    const targetTodo = todos[index]
+    if (!targetTodo) return
+  
+    updateTodo(targetTodo.id, editedTask)
+  
+    setEditingIndex(null)
+    setEditingTask(null)
+  }
+
   const scrollToBottom = () => {
     if (taskListRef.current) {
       taskListRef.current.scrollTop = taskListRef.current.scrollHeight
     }
   }
 
-  const addTask = (newTask: string) => {
-    setTasks([...tasks, newTask])
-    setTimeout(scrollToBottom, 0)
-  }
+  const updateTodo = async (todoId: number, updatedName: string) => {
+    try {
+      const res = await axios.put<Todo>(`http://localhost:4000/todos/${todoId}`, {
+        display_name: updatedName,
+      })
+  
 
-  const deleteTask = (index: number) => {
-    setTasks(tasks.filter((_, i) => i !== index))
-    if (editingIndex === index) {
-      setEditingIndex(null)
-      setEditingTask(null)
+      setTodos((prevTodos) =>
+        prevTodos.map((t) => (t.id === todoId ? res.data : t))
+      )
+    } catch (err) {
+      console.error("Error updating todo:", err)
     }
-  }
-
-  const editTask = (index: number, editedTask: string) => {
-    const newTasks = [...tasks]
-    newTasks[index] = editedTask
-    setTasks(newTasks)
-    setEditingIndex(null)
-    setEditingTask(null)
   }
 
   return (
@@ -92,7 +136,6 @@ export default function RealtorDashboard() {
               <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10">
                 <MessageSquare className="h-5 w-5" />
               </Button>
-
               <Button
                 variant="ghost"
                 size="icon"
@@ -102,7 +145,6 @@ export default function RealtorDashboard() {
               >
                 {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
-
               <Avatar>
                 <AvatarImage src="/placeholder-user.jpg" alt="Realtor" />
                 <AvatarFallback>KG</AvatarFallback>
@@ -165,57 +207,47 @@ export default function RealtorDashboard() {
               <CardTitle>Active Listings</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {[
-                  { address: "123 Main St", price: "$350,000", progress: 75 },
-                  { address: "456 Elm St", price: "$275,000", progress: 40 },
-                  { address: "789 Oak Ave", price: "$425,000", progress: 60 },
-                ].map((listing, index) => (
-                  <div key={index} className="flex items-center">
-                    <div className="w-full">
-                      <p className="text-sm font-medium">{listing.address}</p>
-                      <p className="text-sm text-muted-foreground">{listing.price}</p>
-                      <Progress value={listing.progress} className="mt-2 bg-secondary/20" />
-                    </div>
-
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm">
+                Here you could show more data, or remove this entirely.
+              </p>
             </CardContent>
           </Card>
 
           <Card className="col-span-3 border-primary/20 transition-colors duration-300">
             <CardHeader>
               <CardTitle>Upcoming Tasks</CardTitle>
-              <CardDescription>You have {tasks.length} tasks</CardDescription>
+              <CardDescription>
+                You have {todos.length} tasks from the server
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div ref={taskListRef} className="space-y-4 h-[300px] overflow-y-auto pr-2">
-                {tasks.map((task, index) => (
+                {todos.map((todo, index) => (
                   <div
-                    key={index}
+                    key={todo.id}
                     className={`flex items-center justify-between p-2 rounded ${
                       editingIndex === index ? "bg-primary/10" : ""
                     } transition-colors duration-300`}
                   >
-                    <p className="text-sm flex-grow">{task}</p>
-                    <div className="flex items-center">
+                    <p className="text-sm flex-grow">{todo.display_name}</p>
+                    <div className="flex items-center space-x-2">
                       <Button
                         variant="ghost"
                         size="icon"
                         className="text-primary hover:bg-primary/10 transition-colors duration-300"
                         onClick={() => {
                           setEditingIndex(index)
-                          setEditingTask(task)
+                          setEditingTask(todo.display_name)
                         }}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
+
                       <Button
                         variant="ghost"
                         size="icon"
                         className="text-destructive hover:bg-destructive/10 transition-colors duration-300"
-                        onClick={() => deleteTask(index)}
+                        onClick={() => deleteTodo(todo.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -229,7 +261,9 @@ export default function RealtorDashboard() {
 
         <Card className="mt-6 border-primary/20 transition-colors duration-300">
           <CardHeader>
-            <CardTitle>{editingTask !== null ? "Editing Task" : "Create New Task"}</CardTitle>
+            <CardTitle>
+              {editingTask !== null ? "Editing Task" : "Create New Task"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <TaskCreator
