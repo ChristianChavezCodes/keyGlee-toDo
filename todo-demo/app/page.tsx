@@ -1,24 +1,24 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import axios from "axios"               
+import axios from "axios"
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar/avatar"
 import { Button } from "@/components/ui/button/button"
 import { Progress } from "@/components/ui/progress/progress"
-import { 
-  Calendar, 
-  Home, 
-  Users, 
-  DollarSign, 
-  PlusCircle, 
-  Bell, 
-  MessageSquare, 
-  Pencil, 
-  Trash2, 
-  Sun, 
-  Moon 
+import {
+  Calendar,
+  Home,
+  Users,
+  DollarSign,
+  PlusCircle,
+  Bell,
+  MessageSquare,
+  Pencil,
+  Trash2,
+  Sun,
+  Moon,
 } from "lucide-react"
 import { NavigationBar } from "@/components/navigationBar/navigationBar"
 import { TaskCreator } from "@/components/taskCreator/taskCreator"
@@ -26,16 +26,17 @@ import { TaskCreator } from "@/components/taskCreator/taskCreator"
 interface Todo {
   id: number
   display_name: string
-  due_by?: string      
+  due_by?: string | null
 }
 
 export default function RealtorDashboard() {
   const [todos, setTodos] = useState<Todo[]>([])
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [editingTask, setEditingTask] = useState<string | null>(null)
-  const taskListRef = useRef<HTMLDivElement>(null)
+  const [editingDueDate, setEditingDueDate] = useState<string | null>(null)
 
   const [darkMode, setDarkMode] = useState(false)
+  const taskListRef = useRef<HTMLDivElement>(null)
 
 
   useEffect(() => {
@@ -55,6 +56,7 @@ export default function RealtorDashboard() {
   const fetchTodos = async () => {
     try {
       const res = await axios.get<Todo[]>("http://localhost:4000/todos")
+      console.log("Fetched todos:", res.data)
       setTodos(res.data)
     } catch (err) {
       console.error("Error fetching todos:", err)
@@ -62,11 +64,24 @@ export default function RealtorDashboard() {
   }
 
 
-  const addTask = async (newTask: string) => {
+  const addTask = async (newTask: string, dueDate: string) => {
     try {
-      const res = await axios.post<Todo>("http://localhost:4000/todos", {
+      let dueBy: string | null = null
+      if (dueDate) {
+
+        const midday = `${dueDate}T12:00:00Z`
+        dueBy = new Date(midday).toISOString()
+      }
+
+      const payload = {
         display_name: newTask,
-      })
+        due_by: dueBy,
+      }
+      console.log("Creating new task with payload:", payload)
+
+      const res = await axios.post<Todo>("http://localhost:4000/todos", payload)
+      console.log("Created todo:", res.data)
+
       setTodos((prev) => [...prev, res.data])
       setTimeout(scrollToBottom, 0)
     } catch (err) {
@@ -74,25 +89,44 @@ export default function RealtorDashboard() {
     }
   }
 
+
   const deleteTodo = async (todoId: number) => {
     try {
       await axios.delete(`http://localhost:4000/todos/${todoId}`)
-
       setTodos((prev) => prev.filter((t) => t.id !== todoId))
     } catch (err) {
       console.error("Error deleting todo:", err)
     }
   }
 
-  const editTask = (index: number, editedTask: string) => {
+
+  const updateTodo = async (todoId: number, updatedName: string, updatedDueDate: string) => {
+    try {
+
+      const payload: any = {
+        display_name: updatedName,
+        due_by: updatedDueDate ? new Date(updatedDueDate).toISOString() : null,
+      }
+      console.log("Updating todo:", todoId, "with payload:", payload)
+
+      const res = await axios.put<Todo>(`http://localhost:4000/todos/${todoId}`, payload)
+      setTodos((prevTodos) => prevTodos.map((t) => (t.id === todoId ? res.data : t)))
+    } catch (err) {
+      console.error("Error updating todo:", err)
+    }
+  }
+
+
+  const editTask = (index: number, editedTask: string, editedDueDate: string) => {
     const targetTodo = todos[index]
     if (!targetTodo) return
-  
-    updateTodo(targetTodo.id, editedTask)
-  
+
+    updateTodo(targetTodo.id, editedTask, editedDueDate)
     setEditingIndex(null)
     setEditingTask(null)
+    setEditingDueDate(null)
   }
+
 
   const scrollToBottom = () => {
     if (taskListRef.current) {
@@ -100,26 +134,13 @@ export default function RealtorDashboard() {
     }
   }
 
-  const updateTodo = async (todoId: number, updatedName: string) => {
-    try {
-      const res = await axios.put<Todo>(`http://localhost:4000/todos/${todoId}`, {
-        display_name: updatedName,
-      })
-  
-
-      setTodos((prevTodos) =>
-        prevTodos.map((t) => (t.id === todoId ? res.data : t))
-      )
-    } catch (err) {
-      console.error("Error updating todo:", err)
-    }
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
+
       <header className="bg-background shadow-md transition-colors duration-300">
         <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
+
             <div className="flex items-center">
               <Image
                 src="https://static.wixstatic.com/media/b1862a_35fbcec63649428480d78371e08d8972~mv2.png/v1/fill/w_168,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/keygleelogo_2x.png"
@@ -129,6 +150,8 @@ export default function RealtorDashboard() {
                 className="h-8 w-auto"
               />
             </div>
+
+
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10">
                 <Bell className="h-5 w-5" />
@@ -154,7 +177,9 @@ export default function RealtorDashboard() {
         </div>
       </header>
 
+
       <main className="flex-grow container mx-auto py-6 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Card className="border-primary/20 transition-colors duration-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -201,59 +226,85 @@ export default function RealtorDashboard() {
           </Card>
         </div>
 
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-6">
           <Card className="col-span-4 border-primary/20 transition-colors duration-300">
             <CardHeader>
               <CardTitle>Active Listings</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm">
-                Here you could show more data, or remove this entirely.
-              </p>
+              <div className="space-y-4">
+                {[
+                  { address: "123 Main St", price: "$350,000", progress: 75 },
+                  { address: "456 Elm St", price: "$275,000", progress: 40 },
+                  { address: "789 Oak Ave", price: "$425,000", progress: 60 },
+                ].map((listing, index) => (
+                  <div key={index} className="flex items-center">
+                    <div className="w-full">
+                      <p className="text-sm font-medium">{listing.address}</p>
+                      <p className="text-sm text-muted-foreground">{listing.price}</p>
+                      <Progress value={listing.progress} className="mt-2 bg-secondary/20" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
+
 
           <Card className="col-span-3 border-primary/20 transition-colors duration-300">
             <CardHeader>
               <CardTitle>Upcoming Tasks</CardTitle>
-              <CardDescription>
-                You have {todos.length} tasks from the server
-              </CardDescription>
+              <CardDescription>You have {todos.length} tasks from the server</CardDescription>
             </CardHeader>
             <CardContent>
               <div ref={taskListRef} className="space-y-4 h-[300px] overflow-y-auto pr-2">
-                {todos.map((todo, index) => (
-                  <div
-                    key={todo.id}
-                    className={`flex items-center justify-between p-2 rounded ${
-                      editingIndex === index ? "bg-primary/10" : ""
-                    } transition-colors duration-300`}
-                  >
-                    <p className="text-sm flex-grow">{todo.display_name}</p>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-primary hover:bg-primary/10 transition-colors duration-300"
-                        onClick={() => {
-                          setEditingIndex(index)
-                          setEditingTask(todo.display_name)
-                        }}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
+                {todos.map((todo, index) => {
+       
+                  const isZeroDate = todo.due_by === "0001-01-01T00:00:00Z"
+                  const displayDate = !todo.due_by || isZeroDate
+                    ? null
+                    : `Due by: ${new Date(todo.due_by).toLocaleDateString()}`
 
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:bg-destructive/10 transition-colors duration-300"
-                        onClick={() => deleteTodo(todo.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                  return (
+                    <div
+                      key={todo.id}
+                      className={`flex flex-col p-2 rounded mb-1 ${
+                        editingIndex === index ? "bg-primary/10" : ""
+                      } transition-colors duration-300`}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <p className="text-sm flex-grow">{todo.display_name}</p>
+                        <div className="flex items-center space-x-2 ml-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-primary hover:bg-primary/10 transition-colors duration-300"
+                            onClick={() => {
+                              setEditingIndex(index)
+                              setEditingTask(todo.display_name)
+                              setEditingDueDate(todo.due_by ?? "")
+                            }}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:bg-destructive/10 transition-colors duration-300"
+                            onClick={() => deleteTodo(todo.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-foreground/70 mt-1">
+                        {displayDate}
+                      </p>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </CardContent>
           </Card>
@@ -267,16 +318,19 @@ export default function RealtorDashboard() {
           </CardHeader>
           <CardContent>
             <TaskCreator
-              onTaskCreate={addTask}
+              onTaskCreate={(taskName, dueDate) => addTask(taskName, dueDate)}
               onTaskEdit={
                 editingTask !== null
-                  ? (editedTask) => editTask(editingIndex!, editedTask)
+                  ? (editedTaskName, editedDueDate) =>
+                      editTask(editingIndex!, editedTaskName, editedDueDate)
                   : undefined
               }
               initialTask={editingTask || ""}
+              initialDueDate={editingDueDate || ""}
               onCancel={() => {
                 setEditingIndex(null)
                 setEditingTask(null)
+                setEditingDueDate(null)
               }}
             />
           </CardContent>
