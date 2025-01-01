@@ -38,11 +38,11 @@ export default function RealtorDashboard() {
   const [darkMode, setDarkMode] = useState(false)
   const taskListRef = useRef<HTMLDivElement>(null)
 
+  const [searchDisplayName, setSearchDisplayName] = useState("")
 
   useEffect(() => {
     fetchTodos()
   }, [])
-
 
   useEffect(() => {
     if (darkMode) {
@@ -51,11 +51,16 @@ export default function RealtorDashboard() {
       document.documentElement.classList.remove("dark")
     }
   }, [darkMode])
-
-
-  const fetchTodos = async () => {
+  const fetchTodos = async (partialName?: string) => {
     try {
-      const res = await axios.get<Todo[]>("http://localhost:4000/todos")
+      let url = "http://localhost:4000/todos"
+
+      if (partialName && partialName.trim() !== "") {
+        const encoded = encodeURIComponent(partialName.trim())
+        url += `?display_name=${encoded}`
+      }
+
+      const res = await axios.get<Todo[]>(url)
       console.log("Fetched todos:", res.data)
       setTodos(res.data)
     } catch (err) {
@@ -63,12 +68,10 @@ export default function RealtorDashboard() {
     }
   }
 
-
   const addTask = async (newTask: string, dueDate: string) => {
     try {
       let dueBy: string | null = null
       if (dueDate) {
-
         const midday = `${dueDate}T12:00:00Z`
         dueBy = new Date(midday).toISOString()
       }
@@ -89,7 +92,6 @@ export default function RealtorDashboard() {
     }
   }
 
-
   const deleteTodo = async (todoId: number) => {
     try {
       await axios.delete(`http://localhost:4000/todos/${todoId}`)
@@ -99,11 +101,9 @@ export default function RealtorDashboard() {
     }
   }
 
-
   const updateTodo = async (todoId: number, updatedName: string, updatedDueDate: string) => {
     try {
-
-      const payload: any = {
+      const payload = {
         display_name: updatedName,
         due_by: updatedDueDate ? new Date(updatedDueDate).toISOString() : null,
       }
@@ -115,7 +115,6 @@ export default function RealtorDashboard() {
       console.error("Error updating todo:", err)
     }
   }
-
 
   const editTask = (index: number, editedTask: string, editedDueDate: string) => {
     const targetTodo = todos[index]
@@ -134,13 +133,21 @@ export default function RealtorDashboard() {
     }
   }
 
+  const handleSearch = () => {
+    fetchTodos(searchDisplayName)
+  }
+
+  const handleReset = () => {
+    setSearchDisplayName("")
+    fetchTodos() 
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
 
       <header className="bg-background shadow-md transition-colors duration-300">
         <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
-
             <div className="flex items-center">
               <Image
                 src="https://static.wixstatic.com/media/b1862a_35fbcec63649428480d78371e08d8972~mv2.png/v1/fill/w_168,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/keygleelogo_2x.png"
@@ -150,7 +157,6 @@ export default function RealtorDashboard() {
                 className="h-8 w-auto"
               />
             </div>
-
 
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10">
@@ -177,9 +183,7 @@ export default function RealtorDashboard() {
         </div>
       </header>
 
-
       <main className="flex-grow container mx-auto py-6 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Card className="border-primary/20 transition-colors duration-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -226,6 +230,29 @@ export default function RealtorDashboard() {
           </Card>
         </div>
 
+        <Card className="mt-6 border-primary/20 transition-colors duration-300">
+          <CardHeader>
+            <CardTitle>Search Todos</CardTitle>
+            <CardDescription>Find tasks by Display Name (partial match)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-x-2 sm:space-y-0">
+              <input
+                type="text"
+                placeholder="Search by Display Name (e.g. 'milk')"
+                value={searchDisplayName}
+                onChange={(e) => setSearchDisplayName(e.target.value)}
+                className="border p-2 rounded flex-1"
+              />
+              <Button onClick={handleSearch} variant="default">
+                Search
+              </Button>
+              <Button onClick={handleReset} variant="outline">
+                Reset
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-6">
           <Card className="col-span-4 border-primary/20 transition-colors duration-300">
@@ -251,7 +278,6 @@ export default function RealtorDashboard() {
             </CardContent>
           </Card>
 
-
           <Card className="col-span-3 border-primary/20 transition-colors duration-300">
             <CardHeader>
               <CardTitle>Upcoming Tasks</CardTitle>
@@ -260,7 +286,6 @@ export default function RealtorDashboard() {
             <CardContent>
               <div ref={taskListRef} className="space-y-4 h-[300px] overflow-y-auto pr-2">
                 {todos.map((todo, index) => {
-       
                   const isZeroDate = todo.due_by === "0001-01-01T00:00:00Z"
                   const displayDate = !todo.due_by || isZeroDate
                     ? null
@@ -298,7 +323,6 @@ export default function RealtorDashboard() {
                           </Button>
                         </div>
                       </div>
-
                       <p className="text-xs text-foreground/70 mt-1">
                         {displayDate}
                       </p>
