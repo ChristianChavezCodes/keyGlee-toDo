@@ -19,9 +19,9 @@ func (tr *TodoRepository) Search(search *model.TodoSearchParams) ([]*model.Todo,
 	if search.ID != nil {
 		query = query.Where("id = ?", *search.ID)
 	}
-	if search.DisplayName != nil {
-		query = query.Where("display_name = ?", *search.DisplayName)
-	}
+    if search.DisplayName != nil && *search.DisplayName != "" {
+        query = query.Where("display_name ILIKE ?", "%"+*search.DisplayName+"%")
+    }
 	if search.DueBy != nil {
 		query = query.Where("due_by = ?", *search.DueBy)
 	}
