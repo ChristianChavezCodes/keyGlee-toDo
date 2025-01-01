@@ -143,45 +143,9 @@ export default function RealtorDashboard() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="flex  pt-20 flex-col min-h-screen bg-background text-foreground transition-colors duration-300">
 
-      <header className="bg-background shadow-md transition-colors duration-300">
-        <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <Image
-                src="https://static.wixstatic.com/media/b1862a_35fbcec63649428480d78371e08d8972~mv2.png/v1/fill/w_168,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/keygleelogo_2x.png"
-                alt="Keyglee Logo"
-                width={168}
-                height={40}
-                className="h-8 w-auto"
-              />
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10">
-                <MessageSquare className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-primary hover:bg-primary/10"
-                onClick={() => setDarkMode(!darkMode)}
-                aria-label="Toggle Dark Mode"
-              >
-                {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </Button>
-              <Avatar>
-                <AvatarImage src="/placeholder-user.jpg" alt="Realtor" />
-                <AvatarFallback>KG</AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-        </div>
-      </header>
+      <NavigationBar />
 
       <main className="flex-grow container mx-auto py-6 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
